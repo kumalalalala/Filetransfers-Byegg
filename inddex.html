@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Download Page</title>
+  <style>
+    /* Reset mặc định */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #2b1a47, #0d0a1a);
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    /* Hiệu ứng background glow */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(128,0,255,0.6), transparent 70%);
+      top: -100px;
+      left: -100px;
+      filter: blur(150px);
+      animation: float 6s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      content: "";
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255,0,255,0.4), transparent 70%);
+      bottom: -100px;
+      right: -100px;
+      filter: blur(120px);
+      animation: float 8s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to   { transform: translateY(40px); }
+    }
+
+    .download-container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      text-shadow: 0 0 20px rgba(200, 0, 255, 0.8);
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 20px 50px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #7f00ff, #e100ff);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 0 30px rgba(200, 0, 255, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+
+    .download-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 40px rgba(200, 0, 255, 0.9);
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 20px rgba(200, 0, 255, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(200, 0, 255, 0.9); }
+      100% { box-shadow: 0 0 20px rgba(200, 0, 255, 0.5); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="download-container">
+    <h1>✨ Your File is Ready ✨</h1>
+    <!-- thay "files/example.pdf" bằng link file thật của bạn -->
+    <a href="files/example.pdf" download class="download-btn">⬇ Download</a>
+  </div>
+</body>
+</html>
