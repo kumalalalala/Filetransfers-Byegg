@@ -1,110 +1,327 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Download Page</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --text: #f6f2ff;
+      --card-alpha: 0.04;
+      --accent-1: #7f00ff;
+      --accent-2: #e100ff;
     }
 
-    body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      background: radial-gradient(circle at top, #2b1a47, #0d0a1a);
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
-      overflow: hidden;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(180deg, #0c0620 0%, #090812 50%, #05030b 100%);
+      overflow:hidden;
+      position:relative;
     }
 
-    body::before {
-      content: "";
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(128,0,255,0.6), transparent 70%);
-      top: -100px;
-      left: -100px;
-      filter: blur(150px);
-      animation: float 6s ease-in-out infinite alternate;
+    /* ========== Waves full-bleed background (WIDE SVG to hide edges) ========== */
+    .wave-bg {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      overflow:hidden;
     }
 
-    body::after {
-      content: "";
-      position: absolute;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(255,0,255,0.4), transparent 70%);
-      bottom: -100px;
-      right: -100px;
-      filter: blur(120px);
-      animation: float 8s ease-in-out infinite alternate-reverse;
+    /* Make SVG much wider than viewport so edges never show during animation */
+    .wave-bg svg {
+      position:absolute;
+      left:-100%;      /* shift left by 100% of viewport */
+      width:300%;      /* make svg 300% width of viewport (3x) */
+      height:100vh;    /* fill viewport height */
+      display:block;
+      transform-origin:center;
+      /* faster & smoother color shifts: shorter duration + smooth easing */
+      filter: saturate(1.08) blur(1.2px);
+      animation: hueShift 12s cubic-bezier(.34,.01,.25,1) infinite;
+      will-change: transform, filter;
     }
 
-    @keyframes float {
-      from { transform: translateY(0); }
-      to   { transform: translateY(40px); }
+    /* each wave group uses translateX animations for parallax */
+    .wave-layer {
+      animation-timing-function: linear;
+      will-change: transform, opacity;
     }
 
-    .download-container {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      animation: fadeIn 2s ease;
+    /* Because SVG is wide, these translateX values are conservative but visible */
+    .wave-a { animation: slideA 24s linear infinite; opacity:0.92; }
+    .wave-b { animation: slideB 18s linear infinite; opacity:0.78; filter: blur(4px) saturate(1.05); }
+    .wave-c { animation: slideC 30s linear infinite; opacity:0.66; filter: blur(8px) saturate(1.02); }
+
+    /* translateX values small relative to the 300% width so edges stay hidden */
+    @keyframes slideA { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-12%);} 100%{ transform: translateX(0%);} }
+    @keyframes slideB { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-20%);} 100%{ transform: translateX(0%);} }
+    @keyframes slideC { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-8%);} 100%{ transform: translateX(0%);} }
+
+    /* ====== Faster, smoother hue rotation with more intermediate frames ======
+       - duration shortened to 8s
+       - more keyframes for gentle, continuous color morphing
+       - cubic-bezier easing for silky motion
+    ========================================================================== */
+    @keyframes hueShift {
+      0%   { filter: hue-rotate(0deg)   saturate(1.05) contrast(1); }
+      12.5%{ filter: hue-rotate(30deg)  saturate(1.08) contrast(1.02); }
+      25%  { filter: hue-rotate(55deg)  saturate(1.06) contrast(1.01); }
+      37.5%{ filter: hue-rotate(85deg)  saturate(1.09) contrast(1.03); }
+      50%  { filter: hue-rotate(120deg) saturate(1.05) contrast(1); }
+      62.5%{ filter: hue-rotate(160deg) saturate(1.07) contrast(1.01); }
+      75%  { filter: hue-rotate(210deg) saturate(1.06) contrast(1.02); }
+      87.5%{ filter: hue-rotate(270deg) saturate(1.09) contrast(1.03); }
+      100% { filter: hue-rotate(360deg) saturate(1.05) contrast(1); }
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 40px;
-      text-shadow: 0 0 20px rgba(200, 0, 255, 0.8);
+    /* soft overlay for color transitions - faster & smoother */
+    .color-overlay {
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(127,0,255,0.08), transparent 8%),
+        radial-gradient(circle at 90% 90%, rgba(0,200,255,0.06), transparent 8%);
+      mix-blend-mode: screen;
+      animation: overlayShift 6.5s cubic-bezier(.25,.46,.45,.94) infinite alternate;
+      opacity:0.98;
+      will-change: transform, opacity;
     }
 
-    .download-btn {
-      display: inline-block;
-      padding: 15px 40px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: white;
-      background: linear-gradient(135deg, #7f00ff, #e100ff);
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 0 30px rgba(200, 0, 255, 0.6);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: pulse 2s infinite;
-      margin: 15px;
+    @keyframes overlayShift {
+      from { transform: translateY(0) scale(1); opacity:0.9; }
+      to   { transform: translateY(-34px) scale(1.03); opacity:1; }
     }
 
-    .download-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 40px rgba(200, 0, 255, 0.9);
+    /* ========== Card + controls (above waves) ========== */
+    .card {
+      position:relative;
+      z-index:3;
+      width:100%;
+      max-width:880px;
+      border-radius:16px;
+      padding:36px;
+      text-align:center;
+      background: linear-gradient(180deg, rgba(10,6,20,var(--card-alpha)), rgba(12,6,18,0.02));
+      backdrop-filter: blur(8px) saturate(120%);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      overflow:visible;
     }
 
-    @keyframes pulse {
-      0% { box-shadow: 0 0 20px rgba(200, 0, 255, 0.5); }
-      50% { box-shadow: 0 0 40px rgba(200, 0, 255, 0.9); }
-      100% { box-shadow: 0 0 20px rgba(200, 0, 255, 0.5); }
+    h1{
+      font-size:1.95rem;
+      margin-bottom:20px;
+      color:var(--text);
+      text-shadow: 0 0 12px rgba(0,0,0,0.35);
+      letter-spacing:0.2px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .btn-row{
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    /* Download buttons (animated sheen + bob) */
+    .download-btn{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:14px 34px;
+      border-radius:48px;
+      font-weight:800;
+      font-size:1.02rem;
+      text-decoration:none;
+      color:var(--text);
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor:pointer;
+      overflow:hidden;
+      transition: transform .2s cubic-bezier(.2,.9,.2,1), box-shadow .2s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index:4;
+      min-width:210px;
+      justify-content:center;
+      transform: translateZ(0);
+    }
+
+    .download-btn::after{
+      content:"";
+      position:absolute;
+      left:-90%;
+      top:0;
+      width:40%;
+      height:100%;
+      background: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      transform: skewX(-18deg);
+      opacity:0;
+      transition:left .55s cubic-bezier(.2,.9,.2,1), opacity .14s ease;
+      z-index:2;
+      pointer-events:none;
+    }
+
+    .download-btn.animate { animation: bob 4.2s ease-in-out infinite; }
+    .download-btn.animate:nth-of-type(1) { animation-duration:3.8s; }
+    .download-btn.animate:nth-of-type(2) { animation-duration:4.3s; }
+
+    @keyframes bob {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .download-btn:hover{
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.6);
+    }
+
+    .download-btn:hover::after{
+      left:120%;
+      opacity:0.95;
+      transition:left .5s cubic-bezier(.2,.9,.2,1), opacity .12s ease;
+    }
+
+    .download-btn .icon { width:22px;height:22px; display:inline-grid; place-items:center; }
+
+    .hint{
+      margin-top:8px;
+      color:#d7cfe8;
+      font-size:0.95rem;
+      opacity:0.95;
+      z-index:4;
+    }
+
+    /* repo link: smaller + subtle */
+    .repo{
+      margin-top:20px;
+      display:flex;
+      justify-content:center;
+      z-index:4;
+    }
+
+    .repo-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:10px;
+      text-decoration:none;
+      color: #efe6ff;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border: 1px solid rgba(217,195,255,0.06);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+      font-weight:700;
+      font-size:0.86rem; /* nhỏ như yêu cầu */
+      transition: transform .18s ease, box-shadow .18s ease;
+      z-index:4;
+    }
+
+    .repo-link svg{ width:16px; height:16px; flex-shrink:0; opacity:0.95 }
+
+    .repo-link:hover{ transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.55) }
+
+    /* responsive */
+    @media (max-width:640px){
+      .card{ padding:22px }
+      h1{ font-size:1.45rem }
+      .download-btn{ min-width:160px; padding:12px 18px; font-size:0.98rem }
+    }
+
+    @media (max-width:420px){
+      .btn-row{ gap:12px }
+      .download-btn{ padding:10px 14px; font-size:0.95rem; border-radius:40px }
     }
   </style>
 </head>
 <body>
-  <div class="download-container">
-    <h1>✨ Choose Your Download ✨</h1>
-    <!-- Nút Windows -->
-    <a href="FileTransfer.zip" download class="download-btn">⬇ Download (Windows)</a>
-    <!-- Nút Linux (bạn tự thay file .AppImage, .tar.gz, .deb...) -->
-    <a href="FileTransfer.tar.gz" download class="download-btn">⬇ Download (Linux)</a>
+  <!-- Full-viewport animated SVG waves (SVG intentionally WIDE to hide edges) -->
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG width=300% (handled by CSS) -->
+    <svg viewBox="0 0 4800 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated background waves">
+      <defs>
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#7f00ff"/>
+          <stop offset="50%" stop-color="#00d4ff"/>
+          <stop offset="100%" stop-color="#ff7ab6"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2db7ff"/>
+          <stop offset="50%" stop-color="#7f00ff"/>
+          <stop offset="100%" stop-color="#ffd400"/>
+        </linearGradient>
+        <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#b8ff9e"/>
+          <stop offset="50%" stop-color="#7f00ff"/>
+          <stop offset="100%" stop-color="#e100ff"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Layer C: far/blurred (moves slow) - long path across 4800 width -->
+      <g class="wave-layer wave-c" transform="translate(0,0)">
+        <path d="M0,420 C480,360 960,480 1440,460 C1920,440 2560,340 3200,380 C3840,420 4480,300 4800,360 L4800,900 L0,900 Z"
+              fill="url(#g3)"></path>
+      </g>
+
+      <!-- Layer B: middle (medium speed) -->
+      <g class="wave-layer wave-b" transform="translate(0,0)">
+        <path d="M0,380 C480,320 960,460 1440,420 C1920,380 2280,260 2640,300 C3000,340 3480,260 3840,300 C4200,340 4560,300 4800,330 L4800,900 L0,900 Z"
+              fill="url(#g2)"></path>
+      </g>
+
+      <!-- Layer A: near/front (more contrast, moves faster) -->
+      <g class="wave-layer wave-a" transform="translate(0,0)">
+        <path d="M0,340 C480,240 960,420 1440,380 C1920,340 2280,260 2640,300 C3000,340 3480,240 3840,300 C4200,350 4560,320 4800,300 L4800,900 L0,900 Z"
+              fill="url(#g1)"></path>
+      </g>
+    </svg>
+  </div>
+
+  <!-- soft overlay for additional shifting color -->
+  <div class="color-overlay" aria-hidden="true"></div>
+
+  <!-- Main content card -->
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">✨ Choose Your Download ✨</h1>
+
+    <div class="btn-row" aria-hidden="false">
+      <!-- Windows file -->
+      <a href="FileTransfer.zip" download class="download-btn animate" aria-label="Download for Windows">
+        <span class="icon" aria-hidden="true">⬇</span>
+        <span>Download (Windows)</span>
+      </a>
+
+      <!-- Linux file -->
+      <a href="FileTransfer.tar.gz" download class="download-btn animate" aria-label="Download for Linux">
+        <span class="icon" aria-hidden="true">⬇</span>
+        <span>Download (Linux)</span>
+      </a>
+    </div>
+
+    <div class="hint">Thanks for download!</div>
+
+    <div class="repo" aria-label="Open Source and Guide link">
+      <a class="repo-link" href="https://github.com/kumalalalala/File-transfers-Byegg" target="_blank" rel="noopener noreferrer">
+        <!-- GitHub icon (inline) -->
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 .5a12 12 0 00-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.1-.76.08-.75.08-.75 1.22.09 1.86 1.26 1.86 1.26 1.08 1.86 2.84 1.32 3.53 1.01.11-.79.42-1.32.76-1.62-2.67-.3-5.48-1.34-5.48-5.96 0-1.32.47-2.4 1.24-3.25-.13-.3-.54-1.51.12-3.15 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.64.25 2.85.12 3.15.77.86 1.24 1.94 1.24 3.25 0 4.63-2.82 5.66-5.5 5.96.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .5z" fill="currentColor"/>
+        </svg>
+
+        <span>Open Source &amp; Guide</span>
+      </a>
+    </div>
   </div>
 </body>
 </html>
