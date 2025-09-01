@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Download Page</title>
 
-  <!-- Favicon cho trình duyệt (đặt file favicon.ico cùng thư mục với index.html) -->
+  <!-- Favicon mặc định (local fallback). JS phía dưới sẽ thử load favicon từ GitHub nếu có -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
 
   <style>
@@ -40,41 +40,31 @@
       overflow:hidden;
     }
 
-    /* Make SVG much wider than viewport so edges never show during animation */
     .wave-bg svg {
       position:absolute;
-      left:-100%;      /* shift left by 100% of viewport */
-      width:300%;      /* make svg 300% width of viewport (3x) */
-      height:100vh;    /* fill viewport height */
+      left:-100%;
+      width:300%;
+      height:100vh;
       display:block;
       transform-origin:center;
-      /* faster & smoother color shifts: shorter duration + smooth easing */
       filter: saturate(1.08) blur(1.2px);
       animation: hueShift 12s cubic-bezier(.34,.01,.25,1) infinite;
       will-change: transform, filter;
     }
 
-    /* each wave group uses translateX animations for parallax */
     .wave-layer {
       animation-timing-function: linear;
       will-change: transform, opacity;
     }
 
-    /* Because SVG is wide, these translateX values are conservative but visible */
     .wave-a { animation: slideA 24s linear infinite; opacity:0.92; }
     .wave-b { animation: slideB 18s linear infinite; opacity:0.78; filter: blur(4px) saturate(1.05); }
     .wave-c { animation: slideC 30s linear infinite; opacity:0.66; filter: blur(8px) saturate(1.02); }
 
-    /* translateX values small relative to the 300% width so edges stay hidden */
     @keyframes slideA { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-12%);} 100%{ transform: translateX(0%);} }
     @keyframes slideB { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-20%);} 100%{ transform: translateX(0%);} }
     @keyframes slideC { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-8%);} 100%{ transform: translateX(0%);} }
 
-    /* ====== Faster, smoother hue rotation with more intermediate frames ======
-       - duration shortened to 8s
-       - more keyframes for gentle, continuous color morphing
-       - cubic-bezier easing for silky motion
-    ========================================================================== */
     @keyframes hueShift {
       0%   { filter: hue-rotate(0deg)   saturate(1.05) contrast(1); }
       12.5%{ filter: hue-rotate(30deg)  saturate(1.08) contrast(1.02); }
@@ -87,7 +77,6 @@
       100% { filter: hue-rotate(360deg) saturate(1.05) contrast(1); }
     }
 
-    /* soft overlay for color transitions - faster & smoother */
     .color-overlay {
       position:fixed;
       inset:0;
@@ -107,7 +96,6 @@
       to   { transform: translateY(-34px) scale(1.03); opacity:1; }
     }
 
-    /* ========== Card + controls (above waves) ========== */
     .card {
       position:relative;
       z-index:3;
@@ -138,7 +126,6 @@
       margin-bottom:14px;
     }
 
-    /* Download buttons (animated sheen + bob) */
     .download-btn{
       position:relative;
       display:inline-flex;
@@ -208,7 +195,6 @@
       z-index:4;
     }
 
-    /* repo link: smaller + subtle */
     .repo{
       margin-top:20px;
       display:flex;
@@ -228,7 +214,7 @@
       border: 1px solid rgba(217,195,255,0.06);
       box-shadow: 0 8px 28px rgba(0,0,0,0.45);
       font-weight:700;
-      font-size:0.86rem; /* nhỏ như yêu cầu */
+      font-size:0.86rem;
       transition: transform .18s ease, box-shadow .18s ease;
       z-index:4;
     }
@@ -237,7 +223,6 @@
 
     .repo-link:hover{ transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.55) }
 
-    /* responsive */
     @media (max-width:640px){
       .card{ padding:22px }
       h1{ font-size:1.45rem }
@@ -251,9 +236,7 @@
   </style>
 </head>
 <body>
-  <!-- Full-viewport animated SVG waves (SVG intentionally WIDE to hide edges) -->
   <div class="wave-bg" aria-hidden="true">
-    <!-- SVG width=300% (handled by CSS) -->
     <svg viewBox="0 0 4800 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated background waves">
       <defs>
         <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -273,19 +256,16 @@
         </linearGradient>
       </defs>
 
-      <!-- Layer C: far/blurred (moves slow) - long path across 4800 width -->
       <g class="wave-layer wave-c" transform="translate(0,0)">
         <path d="M0,420 C480,360 960,480 1440,460 C1920,440 2560,340 3200,380 C3840,420 4480,300 4800,360 L4800,900 L0,900 Z"
               fill="url(#g3)"></path>
       </g>
 
-      <!-- Layer B: middle (medium speed) -->
       <g class="wave-layer wave-b" transform="translate(0,0)">
         <path d="M0,380 C480,320 960,460 1440,420 C1920,380 2280,260 2640,300 C3000,340 3480,260 3840,300 C4200,340 4560,300 4800,330 L4800,900 L0,900 Z"
               fill="url(#g2)"></path>
       </g>
 
-      <!-- Layer A: near/front (more contrast, moves faster) -->
       <g class="wave-layer wave-a" transform="translate(0,0)">
         <path d="M0,340 C480,240 960,420 1440,380 C1920,340 2280,260 2640,300 C3000,340 3480,240 3840,300 C4200,350 4560,320 4800,300 L4800,900 L0,900 Z"
               fill="url(#g1)"></path>
@@ -293,22 +273,22 @@
     </svg>
   </div>
 
-  <!-- soft overlay for additional shifting color -->
   <div class="color-overlay" aria-hidden="true"></div>
 
-  <!-- Main content card -->
   <div class="card" role="main" aria-labelledby="title">
     <h1 id="title">✨ Choose Your Download ✨</h1>
 
     <div class="btn-row" aria-hidden="false">
-      <!-- Windows file -->
-      <a href="FileTransfer.exe" download class="download-btn animate" aria-label="Download for Windows">
+      <!-- Windows file (auto latest from Releases) -->
+      <a href="https://github.com/kumalalalala/File-transfers-Byegg/releases/latest/download/FileTransfer.exe"
+         class="download-btn animate" aria-label="Download for Windows" rel="noopener noreferrer">
         <span class="icon" aria-hidden="true">⬇</span>
         <span>Download (Windows)</span>
       </a>
 
-      <!-- Linux file -->
-      <a href="FileTransfer.tar.gz" download class="download-btn animate" aria-label="Download for Linux">
+      <!-- Linux file (auto latest from Releases) -->
+      <a href="https://github.com/kumalalalala/File-transfers-Byegg/releases/latest/download/FileTransfer.tar.gz"
+         class="download-btn animate" aria-label="Download for Linux" rel="noopener noreferrer">
         <span class="icon" aria-hidden="true">⬇</span>
         <span>Download (Linux)</span>
       </a>
@@ -318,7 +298,6 @@
 
     <div class="repo" aria-label="Public Source link">
       <a class="repo-link" href="https://github.com/kumalalalala/File-transfers-Byegg" target="_blank" rel="noopener noreferrer">
-        <!-- GitHub icon (inline) -->
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12 .5a12 12 0 00-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.1-.76.08-.75.08-.75 1.22.09 1.86 1.26 1.86 1.26 1.08 1.86 2.84 1.32 3.53 1.01.11-.79.42-1.32.76-1.62-2.67-.3-5.48-1.34-5.48-5.96 0-1.32.47-2.4 1.24-3.25-.13-.3-.54-1.51.12-3.15 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.64.25 2.85.12 3.15.77.86 1.24 1.94 1.24 3.25 0 4.63-2.82 5.66-5.5 5.96.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .5z" fill="currentColor"/>
         </svg>
@@ -327,5 +306,52 @@
       </a>
     </div>
   </div>
+
+  <script>
+    // Tự động thử lấy favicon từ GitHub (raw) — thử main, sau đó master.
+    // Nếu tìm thấy (response.ok), đổi link rel="icon" sang URL đó.
+    (function(){
+      try {
+        const user = 'kumalalalala';
+        const repo = 'File-transfers-Byegg';
+        const candidateUrls = [
+          `https://raw.githubusercontent.com/${user}/${repo}/main/favicon.ico`,
+          `https://raw.githubusercontent.com/${user}/${repo}/master/favicon.ico`,
+          // một cái backup path nếu raw không dùng (thường không cần)
+          `https://github.com/${user}/${repo}/raw/main/favicon.ico`
+        ];
+
+        // ensure there is a link[rel="icon"] in head to update
+        let iconLink = document.querySelector('link[rel="icon"]');
+        if(!iconLink){
+          iconLink = document.createElement('link');
+          iconLink.rel = 'icon';
+          iconLink.type = 'image/x-icon';
+          iconLink.href = 'favicon.ico';
+          document.head.appendChild(iconLink);
+        }
+
+        // sequentially try HEAD to check existence
+        (async function trySet(){
+          for(const url of candidateUrls){
+            try{
+              const res = await fetch(url, { method: 'HEAD' });
+              if(res && res.ok){
+                iconLink.href = url;
+                // stop at first success
+                return;
+              }
+            } catch(e){
+              // silent fail, thử url tiếp
+            }
+          }
+          // nếu không tìm được, giữ nguyên favicon local (favicon.ico)
+        })();
+      } catch(e){
+        // an toàn, không ảnh hưởng UI nếu có lỗi
+        console.error('favicon auto-load error:', e);
+      }
+    })();
+  </script>
 </body>
 </html>
