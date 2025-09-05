@@ -4,312 +4,1344 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Download Page</title>
-
-  <!-- Favicon mặc định (local fallback). JS phía dưới sẽ thử load favicon từ GitHub nếu có -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-
   <style>
-    :root{
-      --text: #f6f2ff;
-      --card-alpha: 0.04;
-      --accent-1: #7f00ff;
-      --accent-2: #e100ff;
+    :root {
+      /* Tông màu đen-xám cao cấp */
+      --dark-900: #0a0a0a;
+      --dark-800: #121212;
+      --dark-700: #1e1e1e;
+      --dark-600: #2d2d2d;
+      --dark-500: #3a3a3a;
+      --gray-400: #6c6c6c;
+      --gray-300: #a3a3a3;
+      --gray-200: #d4d4d4;
+      --gray-100: #f5f5f5;
+      --text: var(--gray-100);
+      --card-bg: rgb(11, 11, 11);
+      --card-border: rgb(0, 0, 0);
+      --accent-primary: #ffffff;
+      --shadow-sm: 0 1px 12px rgb(71, 71, 71);
+      --shadow-md: 0 1px 24px rgb(197, 197, 197);
+      --shadow-lg: 0 1px 40px rgba(0, 0, 0, 0.1);
+      --transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+      --ease-in-out: cubic-bezier(0.25, 0.1, 0.25, 1);
     }
-
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:28px;
-      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
-      color:var(--text);
-      background: linear-gradient(180deg, #0c0620 0%, #090812 50%, #05030b 100%);
-      overflow:hidden;
-      position:relative;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-
-    /* ========== Waves full-bleed background (WIDE SVG to hide edges) ========== */
-    .wave-bg {
-      position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      overflow:hidden;
+    html, body {
+      scroll-behavior: smooth;
+      overflow-y: scroll;
+      height: 100%;
     }
-
-    .wave-bg svg {
-      position:absolute;
-      left:-100%;
-      width:300%;
-      height:100vh;
-      display:block;
-      transform-origin:center;
-      filter: saturate(1.08) blur(1.2px);
-      animation: hueShift 12s cubic-bezier(.34,.01,.25,1) infinite;
-      will-change: transform, filter;
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      background: var(--dark-900);
+      position: relative;
+      line-height: 1.5;
     }
-
-    .wave-layer {
-      animation-timing-function: linear;
-      will-change: transform, opacity;
+    /* ========== Scroll Container ========== */
+    .scroll-container {
+      z-index: 5;
+      overflow-y: auto;
+      inset: 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
     }
-
-    .wave-a { animation: slideA 24s linear infinite; opacity:0.92; }
-    .wave-b { animation: slideB 18s linear infinite; opacity:0.78; filter: blur(4px) saturate(1.05); }
-    .wave-c { animation: slideC 30s linear infinite; opacity:0.66; filter: blur(8px) saturate(1.02); }
-
-    @keyframes slideA { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-12%);} 100%{ transform: translateX(0%);} }
-    @keyframes slideB { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-20%);} 100%{ transform: translateX(0%);} }
-    @keyframes slideC { 0%{ transform: translateX(0%);} 50%{ transform: translateX(-8%);} 100%{ transform: translateX(0%);} }
-
-    @keyframes hueShift {
-      0%   { filter: hue-rotate(0deg)   saturate(1.05) contrast(1); }
-      12.5%{ filter: hue-rotate(30deg)  saturate(1.08) contrast(1.02); }
-      25%  { filter: hue-rotate(55deg)  saturate(1.06) contrast(1.01); }
-      37.5%{ filter: hue-rotate(85deg)  saturate(1.09) contrast(1.03); }
-      50%  { filter: hue-rotate(120deg) saturate(1.05) contrast(1); }
-      62.5%{ filter: hue-rotate(160deg) saturate(1.07) contrast(1.01); }
-      75%  { filter: hue-rotate(210deg) saturate(1.06) contrast(1.02); }
-      87.5%{ filter: hue-rotate(270deg) saturate(1.09) contrast(1.03); }
-      100% { filter: hue-rotate(360deg) saturate(1.05) contrast(1); }
+    .section {
+      height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 28px;
     }
-
-    .color-overlay {
-      position:fixed;
-      inset:0;
-      z-index:1;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(127,0,255,0.08), transparent 8%),
-        radial-gradient(circle at 90% 90%, rgba(0,200,255,0.06), transparent 8%);
-      mix-blend-mode: screen;
-      animation: overlayShift 6.5s cubic-bezier(.25,.46,.45,.94) infinite alternate;
-      opacity:0.98;
-      will-change: transform, opacity;
+    /* ========== Video Background ========== */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      object-fit: cover;
+      opacity: 0.4;
     }
-
-    @keyframes overlayShift {
-      from { transform: translateY(0) scale(1); opacity:0.9; }
-      to   { transform: translateY(-34px) scale(1.03); opacity:1; }
+    /* ========== Nền mạng nơ-ron ========== */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 1;
+      pointer-events: none;
     }
-
+    .gradient-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at top, transparent 0%, rgba(10,10,10,0.5) 50%, rgba(10,10,10,0.9) 100%),
+                  radial-gradient(ellipse at bottom, var(--dark-900) 0%, transparent 70%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    /* ========== Card chính với hiệu ứng cinematic ========== */
+    .card-container {
+      position: relative;
+      width: 100%;
+      max-width: 880px;
+      padding: 40px;
+      perspective: 1000px;
+      z-index: 10;
+    }
     .card {
-      position:relative;
-      z-index:3;
-      width:100%;
-      max-width:880px;
-      border-radius:16px;
-      padding:36px;
-      text-align:center;
-      background: linear-gradient(180deg, rgba(10,6,20,var(--card-alpha)), rgba(12,6,18,0.02));
-      backdrop-filter: blur(8px) saturate(120%);
-      box-shadow: 0 18px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      overflow:visible;
+      position: relative;
+      z-index: 100;
+      width: 100%;
+      border-radius: 16px;
+      padding: 48px;
+      text-align: center;
+      background: var(--card-bg);
+      backdrop-filter: blur(15px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      will-change: transform, box-shadow;
+      transition: var(--transition);
+      opacity: 0.1;
+      transform: translateY(20px);
     }
-
-    h1{
-      font-size:1.95rem;
-      margin-bottom:20px;
-      color:var(--text);
-      text-shadow: 0 0 12px rgba(0,0,0,0.35);
-      letter-spacing:0.2px;
+    .card.visible {
+      opacity: 0.96;
+      transform: translateY(0);
     }
-
-    .btn-row{
-      display:flex;
-      gap:18px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-bottom:14px;
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 0%,rgba(110, 107, 107, 0.5) 100%);
+      pointer-events: none;
+      z-index: -1;
+      border-radius: 16px;
     }
-
-    .download-btn{
-      position:relative;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:14px 34px;
-      border-radius:48px;
-      font-weight:800;
-      font-size:1.02rem;
-      text-decoration:none;
-      color:var(--text);
-      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.05);
-      cursor:pointer;
-      overflow:hidden;
-      transition: transform .2s cubic-bezier(.2,.9,.2,1), box-shadow .2s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index:4;
-      min-width:210px;
-      justify-content:center;
-      transform: translateZ(0);
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      z-index: 5;
     }
-
-    .download-btn::after{
-      content:"";
-      position:absolute;
-      left:-90%;
-      top:0;
-      width:40%;
-      height:100%;
-      background: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.04));
-      transform: skewX(-18deg);
-      opacity:0;
-      transition:left .55s cubic-bezier(.2,.9,.2,1), opacity .14s ease;
-      z-index:2;
-      pointer-events:none;
+    /* ========== Typography ========== */
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--text);
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      position: relative;
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: var(--transition);
     }
-
-    .download-btn.animate { animation: bob 4.2s ease-in-out infinite; }
-    .download-btn.animate:nth-of-type(1) { animation-duration:3.8s; }
-    .download-btn.animate:nth-of-type(2) { animation-duration:4.3s; }
-
-    @keyframes bob {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-      100% { transform: translateY(0); }
+    h1.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
-
-    .download-btn:hover{
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 28px 80px rgba(0,0,0,0.6);
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accept-primary), transparent);
+      border-radius: 3px;
     }
-
-    .download-btn:hover::after{
-      left:120%;
-      opacity:0.95;
-      transition:left .5s cubic-bezier(.2,.9,.2,1), opacity .12s ease;
+    .subtitle {
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--gray-300);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: var(--transition);
     }
-
-    .download-btn .icon { width:22px;height:22px; display:inline-grid; place-items:center; }
-
-    .hint{
-      margin-top:8px;
-      color:#d7cfe8;
-      font-size:0.95rem;
-      opacity:0.95;
-      z-index:4;
+    .subtitle.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
-
-    .repo{
-      margin-top:20px;
-      display:flex;
-      justify-content:center;
-      z-index:4;
+    /* ========== Button với micro-interactions tinh tế ========== */
+    .btn-row {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: var(--transition);
     }
-
-    .repo-link{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:10px;
-      text-decoration:none;
-      color: #efe6ff;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-      border: 1px solid rgba(217,195,255,0.06);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-      font-weight:700;
-      font-size:0.86rem;
-      transition: transform .18s ease, box-shadow .18s ease;
-      z-index:4;
+    .btn-row.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
-
-    .repo-link svg{ width:16px; height:16px; flex-shrink:0; opacity:0.95 }
-
-    .repo-link:hover{ transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.55) }
-
-    @media (max-width:640px){
-      .card{ padding:22px }
-      h1{ font-size:1.45rem }
-      .download-btn{ min-width:160px; padding:12px 18px; font-size:0.98rem }
+    .download-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 42px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-decoration: none;
+      color: var(--text);
+      background: rgb(26, 26, 26);
+      border: 2px solid var(--dark-500);
+      cursor: pointer;
+      overflow: hidden;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      z-index: 4;
+      min-width: 240px;
+      justify-content: center;
+      transform: translateY(0);
+      opacity: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-
-    @media (max-width:420px){
-      .btn-row{ gap:12px }
-      .download-btn{ padding:10px 14px; font-size:0.95rem; border-radius:40px }
+    .download-btn.visible {
+      opacity: 1;
+    }
+    .download-btn:nth-child(1) {
+      transition-delay: 0.2s;
+    }
+    .download-btn:nth-child(2) {
+      transition-delay: 0.3s;
+    }
+    .download-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.03) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.03) 100%);
+      transform: translateX(-100%);
+      transition: transform 0.7s var(--ease-in-out);
+      z-index: -1;
+    }
+    .download-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(45, 45, 45, 0.95);
+    }
+    .download-btn:hover::before {
+      transform: translateX(100%);
+    }
+    .download-btn:active {
+      transform: translateY(0) scale(0.99);
+      box-shadow: var(--shadow-sm);
+    }
+    .download-btn .icon {
+      width: 24px;
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      position: relative;
+      transition: var(--transition);
+    }
+    /* Hint text với animation subtle */
+    .hint {
+      margin-top: 12px;
+      color: var(--gray-300);
+      font-size: 0.95rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: var(--transition);
+    }
+    .hint.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* ========== Hiệu ứng loading ========== */
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-primary), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      z-index: 9999;
+      will-change: transform;
+      pointer-events: none;
+      transition: transform 0.7s ease;
+    }
+    /* ========== Phong thư với logo GitHub ========== */
+    .letter-image {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+    .animated-mail {
+      position: absolute;
+      height: 150px;
+      width: 200px;
+      transition: .4s;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
+              drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+      z-index: 10;
+    }
+    .animated-mail .body {
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 100px 200px;
+      border-color: transparent transparent #1e1e1e transparent;
+      z-index: 2;
+    }
+    .animated-mail .top-fold {
+      position: absolute;
+      top: 50px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 50px 100px 0 100px;
+      transform-origin: 50% 0%;
+      transition: transform .4s .4s, z-index .2s .4s;
+      border-color: #0c0c0c transparent transparent transparent;
+      z-index: 2;
+    }
+    .animated-mail .back-fold {
+      position: absolute;
+      bottom: 0;
+      width: 200px;
+      height: 100px;
+      background: #1e1e1e;
+      z-index: 0;
+    }
+    .animated-mail .left-fold {
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 50px 0 50px 100px;
+      border-color: transparent transparent transparent #1e1e1e;
+      z-index: 2;
+    }
+    .animated-mail .letter {
+      left: 20px;
+      bottom: 0px;
+      position: absolute;
+      width: 160px;
+      height: 60px;
+      background: #434343;
+      z-index: 1;
+      overflow: hidden;
+      transition: .4s .2s;
+      box-shadow: inset 0 0 10px rgba(94, 90, 90, 0.3);
+    }
+    .animated-mail .letter .letter-border {
+      height: 10px;
+      width: 100%;
+      background: repeating-linear-gradient(
+        -45deg,
+        #e0e0e0,
+        #e0e0e0 8px,
+        transparent 8px,
+        transparent 18px
+      );
+    }
+    .animated-mail .letter .public-source {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -89%);
+      font-family: 'Arial', 'Helvetica', sans-serif;
+      font-weight: bold;
+      font-size: 170%;
+      color: #000000;
+      text-align: center;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    .animated-mail .letter .public-source a {
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 1s ease;
+    }
+    .animated-mail .letter .public-source a:hover {
+      color: #ffe600;
+      text-shadow: 0 0 10px #ffee00;
+    }
+    /* CSS cho logo GitHub */
+    .github-logo {
+      position: absolute;
+      top: 59%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      z-index: 5;
+    }
+    .github-logo svg {
+      width: 100%;
+      height: 100%;
+    }
+    .github-logo svg path {
+      stroke: #ffffff;
+      stroke-width: 1.5;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      transition: all 0.3s ease;
+    }
+    @keyframes dash {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    .shadow {
+      position: absolute;
+      top: 200px;
+      left: 50%;
+      width: 400px;
+      height: 30px;
+      transition: .4s;
+      transform: translateX(-50%);
+      border-radius: 100%;
+      background: radial-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.0), rgba(0,0,0,0.0));
+    }
+    .letter-image:hover .animated-mail {
+      transform: translateY(50px);
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9))
+              drop-shadow(0 0 20px rgba(255, 255, 255, 0.7));
+    }
+    .letter-image:hover .animated-mail .top-fold {
+      transition: transform .4s, z-index .2s;
+      transform: rotateX(180deg);
+      z-index: 0;
+    }
+    .letter-image:hover .animated-mail .letter {
+      height: 180px;
+    }
+    .letter-image:hover .shadow {
+      width: 250px;
+    }
+    /* ========== Giao diện About Me ========== */
+    .about-section {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .about-section * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .about-section h1 {
+      font-size: 5.25vmin;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      letter-spacing: 1px;
+      font-weight: 300;
+      margin-bottom: 0;
+    }
+    .about-section p {
+      font-size: max(10pt, 2.5vmin);
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+    .about-section em {
+      color: #a0a0a0;
+      font-style: italic;
+    }
+    .about-section .wrap {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      width: 85vmin;
+      height: 65vmin;
+      margin: 2rem auto;
+      border-radius: 16px;
+      background: rgba(20, 20, 20, 0.7);
+      backdrop-filter: blur(10px);
+      box-shadow: 
+          0 0 0 1px rgba(255, 255, 255, 0.05),
+          0 10px 30px rgba(35, 35, 35, 0.5),
+          0 15px 35px rgba(0, 0, 0, 0.6);
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .about-section .wrap::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+          transparent, transparent, 
+          rgba(255, 255, 255, 0.1), 
+          transparent, transparent);
+      z-index: -1;
+      border-radius: 18px;
+      animation: borderLight 4s linear infinite;
+    }
+    .about-section .overlay {
+      position: relative;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      padding: 1rem 0.75rem;
+      background: rgba(18, 18, 18, 0.85);
+      transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 1;
+      border-radius: 12px 0 0 12px;
+    }
+    .about-section .overlay-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 15vmin;
+      height: 100%;
+      padding: 0.5rem 0 0 0.5rem;
+      border-left: 1px solid rgba(42, 42, 42, 0.1);
+      transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.2s;
+      z-index: 1;
+    }
+    .about-section .image-content {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60vmin;
+      height: 100%;
+      background-image: url("https://i.ibb.co/HpFmNQRz/1757053883250-APC-0199.jpg");
+      background-size: cover;
+      background-position: center;
+      transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      filter: grayscale(0%) contrast(100%) brightness(100%);
+    }
+    .about-section .image-content::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+          rgba(15, 15, 15, 0.9) 0%, 
+          rgb(0, 0, 0, 0.3) 30%,
+          transparent 70%);
+    }
+    .about-section .inset {
+      max-width: 50%;
+      margin: 0.25em 1em 1em 0;
+      border-radius: 8px;
+      float: left;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      filter: grayscale(30%) contrast(100%);
+      transition: all 0.5s ease;
+    }
+    .about-section .inset:hover {
+      filter: grayscale(0%) contrast(120%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    }
+    .about-section .dots {
+      position: absolute;
+      bottom: 1rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 70px;
+      height: 4vmin;
+      transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.3s;
+    }
+    .about-section .dot {
+      width: 1rem;
+      height: 1rem;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.3s;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    .about-section .text {
+      display: grid;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60vmin;
+      height: 100%;
+      padding: 3vmin 4vmin;
+      background: rgba(25, 25, 25, 0.85);
+      backdrop-filter: blur(5px);
+      box-shadow: inset 1px 1px 15px 0 rgba(0 0 0 / 0.4);
+      overflow-y: scroll;
+      border-radius: 0 12px 12px 0;
+    }
+    .about-section .text::-webkit-scrollbar {
+      width: 5px;
+    }
+    .about-section .text::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    .about-section .tree {
+      place-self: center;
+      width: calc(50px + 2vw);
+      filter: grayscale(00%) contrast(120%) brightness(90%);
+      transition: all 0.5s ease;
+    }
+    .about-section .tree:hover {
+      filter: grayscale(60%) contrast(130%) brightness(110%);
+      transform: scale(1.05);
+    }
+    /* Hover effects */
+    .about-section .wrap:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+          0 0 0 1px rgba(255, 255, 255, 0.1),
+          0 15px 35px rgba(0, 0, 0, 0.6),
+          0 20px 40px rgba(0, 0, 0, 0.7);
+    }
+    .about-section .wrap:hover .overlay {
+      transform: translateX(-60vmin);
+      filter: blur(2px);
+    }
+    .about-section .wrap:hover .image-content {
+      width: 30vmin;
+      filter: grayscale(30%) contrast(130%) brightness(70%);
+    }
+    .about-section .wrap:hover .overlay-content {
+      border: none;
+      transition-delay: 0.2s;
+      transform: translateX(60vmin);
+    }
+    .about-section .wrap:hover .dots {
+      transform: translateX(1rem);
+    }
+    .about-section .wrap:hover .dots .dot {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+    /* Animations and timing delays */
+    .about-section .animate {
+      animation-duration: 0.8s;
+      animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+      animation-fill-mode: both;
+    }
+    /* Pop In */
+    .about-section .pop {
+      animation-name: pop;
+    }
+    @keyframes pop {
+      0% {
+          opacity: 0;
+          transform: scale(0.8, 0.8);
+          filter: blur(10px);
+      }
+      100% {
+          opacity: 1;
+          transform: scale(1, 1);
+          filter: blur(0);
+      }
+    }
+    /* Slide In */
+    .about-section .slide {
+      animation-name: slide;
+    }
+    @keyframes slide {
+      0% {
+          opacity: 0;
+          transform: translate(4em, 0);
+          filter: blur(5px);
+      }
+      100% {
+          opacity: 1;
+          transform: translate(0, 0);
+          filter: blur(0);
+      }
+    }
+    /* Slide Left */
+    .about-section .slide-left {
+      animation-name: slide-left;
+    }
+    @keyframes slide-left {
+      0% {
+          opacity: 0;
+          transform: translate(-40px, 0);
+          filter: blur(5px);
+      }
+      100% {
+          opacity: 1;
+          transform: translate(0, 0);
+          filter: blur(0);
+      }
+    }
+    .about-section .slide-up {
+      animation-name: slide-up;
+    }
+    @keyframes slide-up {
+      0% {
+          opacity: 0;
+          transform: translateY(3em);
+          filter: blur(5px);
+      }
+      100% {
+          opacity: 1;
+          transform: translateY(0);
+          filter: blur(0);
+      }
+    }
+    /* Border light animation */
+    @keyframes borderLight {
+      0% {
+          opacity: 0;
+      }
+      50% {
+          opacity: 0.5;
+      }
+      100% {
+          opacity: 0;
+      }
+    }
+    .about-section .delay-1 {
+      animation-delay: 0.3s;
+    }
+    .about-section .delay-2 {
+      animation-delay: 0.6s;
+    }
+    .about-section .delay-3 {
+      animation-delay: 0.9s;
+    }
+    .about-section .delay-4 {
+      animation-delay: 1.2s;
+    }
+    .about-section .delay-5 {
+      animation-delay: 1.5s;
+    }
+    .about-section .delay-6 {
+      animation-delay: 1.8s;
+    }
+    .about-section .delay-7 {
+      animation-delay: 2.1s;
+    }
+    .about-section .delay-8 {
+      animation-delay: 2.4s;
+    }
+    /* Language Switcher Styles */
+    .about-section .language-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      font-family: 'Concert One', cursive;
+      font-size: 1.8rem;
+    }
+    .about-section .tabber {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+    }
+    .about-section .tabber label {
+      user-select: none;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      will-change: transform;
+      transform: translateZ(0px);
+      transition: transform 125ms ease-in-out, filter 125ms ease-in-out;
+      color: rgba(255, 255, 255, 0.7);
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+    .about-section .tabber label:hover {
+      transform: scale(1.1);
+      color: #ffffff;
+    }
+    .about-section .tabber input[type="radio"] {
+      display: none;
+    }
+    .about-section .tabber input#t1 ~ .blob {
+      transform-origin: right center;
+    }
+    .about-section .tabber input#t2 ~ .blob {
+      transform-origin: left center;
+    }
+    .about-section .tabber input#t1:checked ~ .blob {
+      background: #3a3a3a;
+      animation-name: stretchyRev;
+    }
+    .about-section .tabber input#t2:checked ~ .blob {
+      background-color: #555555;
+      animation-name: stretchy;
+    }
+    .about-section .tabber .blob {
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      z-index: -1;
+      border-radius: 8px;
+      animation-duration: .5s;
+      animation-direction: forwards;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+      transition: transform 150ms ease, background 150ms ease;
+      filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'><defs><filter id='goo'><feGaussianBlur in='SourceGraphic' stdDeviation='10' result='blur'/><feColorMatrix in='blur' mode='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9' result='goo'/><feComposite in='SourceGraphic' in2='goo' operator='atop'/></filter></defs></svg>#goo");
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    .about-section .tabber .blob:before,
+    .about-section .tabber .blob:after {
+      display: block;
+      content: "";
+      position: absolute;
+      top: 0;
+      background-color: inherit;
+      height: 100%;
+      width: 50%;
+      border-radius: 100%;
+      transform: scale(1.15);
+      transition: transform 150ms ease;
+      animation-name: pulse;
+      animation-duration: .5s;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+    }
+    .about-section .tabber .blob:before {
+      left: 0;
+      animation-delay: .15s;
+    }
+    .about-section .tabber .blob:after {
+      right: 0;
+    }
+    @keyframes stretchy {
+      0% {
+          transform: translateX(0) scaleX(1);
+      }
+      50% {
+          transform: translateX(0) scaleX(2);
+      }
+      100% {
+          transform: translateX(100%) scaleX(1);
+      }
+    }
+    @keyframes stretchyRev {
+      0% {
+          transform: translateX(100%) scaleX(1);
+      }
+      50% {
+          transform: translateX(0) scaleX(2);
+      }
+      100% {
+          transform: translateX(0) scaleX(1);
+      }
+    }
+    @keyframes pulse {
+      0%, 50% {
+          transform: scaleX(1);
+      }
+      25%, 75% {
+          transform: scaleX(1.5);
+      }
+    }
+    /* Content for different languages */
+    .about-section .lang-content {
+      display: none;
+    }
+    .about-section .lang-content.active {
+      display: block;
+    }
+    /* Hiệu ứng hạt li ti tinh tế cho nền */
+    .about-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+          radial-gradient(white 1px, transparent 1px),
+          radial-gradient(white 1px, transparent 1px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+      opacity: 0.03;
+      z-index: -1;
+    }
+    
+    /* ========== Mũi tên chỉ scroll xuống ========== */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 1000;
+    }
+    .scroll-text {
+      margin-bottom: 18px;
+      font-size: 18px;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      animation: text-pulse 2s infinite;
+    }
+    .arrow-down {
+      width: 25px;
+      height: 25px;
+      margin: 0 auto;
+      position: relative;
+      animation: bounce 2s infinite;
+    }
+    .arrow-down::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-right: 5px solid var(--text);
+      border-bottom: 5px solid var(--text);
+      transform: rotate(45deg);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-15px);
+      }
+      60% {
+        transform: translateY(-7px);
+      }
+    }
+    @keyframes text-pulse {
+      0%, 100% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+    
+    /* ========== Responsive design ========== */
+    @media (max-width: 768px) {
+      .card {
+        padding: 36px 28px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+      }
+      .btn-row {
+        gap: 16px;
+      }
+      .download-btn {
+        padding: 16px 32px;
+        min-width: 200px;
+        font-size: 1rem;
+      }
+      .about-section .wrap {
+        width: 95vmin;
+        height: 75vmin;
+      }
+      .about-section .text {
+        width: 70vmin;
+        padding: 2vmin 3vmin;
+      }
+    }
+    @media (max-width: 480px) {
+      .card {
+        padding: 28px 20px;
+      }
+      h1 {
+        font-size: 1.75rem;
+      }
+      .subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+      }
+      .btn-row {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .download-btn {
+        width: 100%;
+        padding: 16px;
+        min-width: auto;
+      }
+      .about-section .wrap {
+        width: 98vmin;
+        height: 85vmin;
+      }
+      .about-section .text {
+        width: 75vmin;
+        padding: 2vmin;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wave-bg" aria-hidden="true">
-    <svg viewBox="0 0 4800 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated background waves">
-      <defs>
-        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#7f00ff"/>
-          <stop offset="50%" stop-color="#00d4ff"/>
-          <stop offset="100%" stop-color="#ff7ab6"/>
-        </linearGradient>
-        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#2db7ff"/>
-          <stop offset="50%" stop-color="#7f00ff"/>
-          <stop offset="100%" stop-color="#ffd400"/>
-        </linearGradient>
-        <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#b8ff9e"/>
-          <stop offset="50%" stop-color="#7f00ff"/>
-          <stop offset="100%" stop-color="#e100ff"/>
-        </linearGradient>
-      </defs>
-
-      <g class="wave-layer wave-c" transform="translate(0,0)">
-        <path d="M0,420 C480,360 960,480 1440,460 C1920,440 2560,340 3200,380 C3840,420 4480,300 4800,360 L4800,900 L0,900 Z"
-              fill="url(#g3)"></path>
-      </g>
-
-      <g class="wave-layer wave-b" transform="translate(0,0)">
-        <path d="M0,380 C480,320 960,460 1440,420 C1920,380 2280,260 2640,300 C3000,340 3480,260 3840,300 C4200,340 4560,300 4800,330 L4800,900 L0,900 Z"
-              fill="url(#g2)"></path>
-      </g>
-
-      <g class="wave-layer wave-a" transform="translate(0,0)">
-        <path d="M0,340 C480,240 960,420 1440,380 C1920,340 2280,260 2640,300 C3000,340 3480,240 3840,300 C4200,350 4560,320 4800,300 L4800,900 L0,900 Z"
-              fill="url(#g1)"></path>
-      </g>
-    </svg>
+  <!-- Video background -->
+  <video id="background-video" class="video-background" autoplay loop muted playsinline>
+    <source src="hi.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <!-- Loading indicator -->
+  <div class="loading"></div>
+  <!-- Nền hình học -->
+  <div class="geometric-bg" aria-hidden="true">
+    <div class="geometric-shape shape-1"></div>
+    <div class="geometric-shape shape-2"></div>
+    <div class="geometric-shape shape-3"></div>
   </div>
-
-  <div class="color-overlay" aria-hidden="true"></div>
-
-  <div class="card" role="main" aria-labelledby="title">
-    <h1 id="title">✨ Choose Your Download ✨</h1>
-
-    <div class="btn-row" aria-hidden="false">
-      <!-- Windows file (auto latest from Releases) -->
-      <a href="https://github.com/kumalalalala/File-transfers-Byegg/releases/latest/download/FileTransfer.exe"
-         class="download-btn animate" aria-label="Download for Windows" rel="noopener noreferrer">
-        <span class="icon" aria-hidden="true">⬇</span>
-        <span>Download (Windows)</span>
-      </a>
-
-      <!-- Linux file (auto latest from Releases) -->
-      <a href="https://github.com/kumalalalala/File-transfers-Byegg/releases/latest/download/FileTransfer.tar.gz"
-         class="download-btn animate" aria-label="Download for Linux" rel="noopener noreferrer">
-        <span class="icon" aria-hidden="true">⬇</span>
-        <span>Download (Linux)</span>
-      </a>
-    </div>
-
-    <div class="hint">Thanks for download!</div>
-
-    <div class="repo" aria-label="Public Source link">
-      <a class="repo-link" href="https://github.com/kumalalalala/File-transfers-Byegg" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 .5a12 12 0 00-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.1-.76.08-.75.08-.75 1.22.09 1.86 1.26 1.86 1.26 1.08 1.86 2.84 1.32 3.53 1.01.11-.79.42-1.32.76-1.62-2.67-.3-5.48-1.34-5.48-5.96 0-1.32.47-2.4 1.24-3.25-.13-.3-.54-1.51.12-3.15 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.64.25 2.85.12 3.15.77.86 1.24 1.94 1.24 3.25 0 4.63-2.82 5.66-5.5 5.96.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .5z" fill="currentColor"/>
-        </svg>
-
-        <span>Public Source &amp; Guide</span>
-      </a>
-    </div>
+  <!-- Nền mạng nơ-ron -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="gradient-overlay"></div>
+  <!-- Scroll Container -->
+  <div class="scroll-container">
+    <!-- Section 1: Download Page -->
+    <section class="section download-section">
+      <div class="card-container">
+        <div class="card">
+          <h1 id="title">Download</h1>
+          <p class="subtitle">Please go to http://localhost:3000/ to set temp folder first!</p>
+          <div class="btn-row">
+            <!-- Windows file (auto latest from Releases) -->
+            <a href="https://github.com/kumalalalala/File-transfers-Byegg/releases/latest/download/FileTransfer.exe"
+              class="download-btn" aria-label="Download for Windows" rel="noopener noreferrer">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 512 499.81" fill="currentColor">
+                  <path d="M0,67.048l207.238-27.137v197.803H0V67.048z M207.238,459.904L0,432.762V262.096h207.238V459.904z M512,0v237.714H231.619  v-201L512,0z M512,499.81l-280.381-36.714v-201H512V499.81z"></path>
+                </svg>
+              </span>
+              <span>Windows</span>
+            </a>
+            <!-- Linux file (auto latest from Releases) -->
+            <a href="https://github.com/kumalalalala/File-transfers-Byegg/releases/latest/download/FileTransfer.tar.gz"
+              class="download-btn" aria-label="Download for Linux" rel="noopener noreferrer">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 1000 1000" fill="currentColor">
+                <path d="M369.954 229.402q-6.138 .558 -8.649 5.859t-4.743 5.301q-2.79 .558 -2.79 -2.79 0 -6.696 10.602 -8.37h5.58zm48.546 7.812q-2.232 .558 -6.417 -3.627t-9.765 -2.511q13.392 -6.138 17.856 1.116 1.674 3.348 -1.674 5.022zm-195.858 238.266q-2.232 -.558 -3.348 1.674t-2.511 6.975 -3.069 7.533 -5.58 7.254q-3.906 5.58 -.558 6.696 2.232 .558 6.975 -3.906t6.975 -10.044q.558 -1.674 1.116 -3.906t1.116 -3.348 .837 -2.511 .279 -2.232v-1.674t-.558 -1.395 -1.674 -1.116zm477.09 200.322q0 -10.044 -30.69 -23.436 2.232 -8.37 4.185 -15.345t2.79 -14.508 1.674 -11.997 .279 -12.555 -.558 -10.881 -1.953 -12.276 -2.232 -11.439 -2.79 -13.95 -3.069 -14.787q-5.58 -26.784 -26.226 -57.474t-40.176 -41.85q13.392 11.16 31.806 46.314 48.546 90.396 30.132 155.124 -6.138 22.32 -27.9 23.436 -17.298 2.232 -21.483 -10.323t-4.464 -46.593 -6.417 -59.706q-5.022 -21.762 -10.881 -38.502t-10.881 -25.389 -8.649 -13.671 -7.254 -8.37 -4.185 -3.906q-7.812 -34.596 -17.298 -57.474t-16.461 -31.248 -13.113 -18.414 -8.37 -22.32q-2.232 -11.718 3.348 -29.853t2.511 -27.621 -24.831 -13.95q-8.37 -1.674 -24.831 -10.044t-19.809 -8.928q-4.464 -.558 -6.138 -14.508t4.464 -28.458 20.088 -15.066q20.646 -1.674 28.458 16.74t2.232 32.364q-6.138 10.602 -1.116 14.787t16.74 .279q7.254 -2.232 7.254 -20.088v-20.646q-2.79 -16.74 -7.533 -27.9t-11.718 -17.019 -13.113 -8.37 -15.066 -4.185q-59.706 4.464 -49.662 74.772 0 8.37 -.558 8.37 -5.022 -5.022 -16.461 -5.859t-18.414 .279 -8.649 -2.79q.558 -31.806 -8.928 -50.22t-25.11 -18.972q-15.066 -.558 -23.157 15.345t-9.207 33.201q-.558 8.37 1.953 20.646t7.254 20.925 8.649 7.533q5.58 -1.674 8.928 -7.812 2.232 -5.022 -3.906 -4.464 -3.906 0 -8.649 -8.091t-5.301 -18.693q-.558 -12.276 5.022 -20.646t18.972 -7.812q9.486 0 15.066 11.718t5.301 21.762 -.837 12.276q-12.276 8.37 -17.298 16.182 -4.464 6.696 -15.345 13.113t-11.439 6.975q-7.254 7.812 -8.649 15.066t4.185 10.044q7.812 4.464 13.95 10.881t8.928 10.602 10.323 7.254 19.809 3.627q26.226 1.116 56.916 -8.37 1.116 -.558 12.834 -3.906t19.251 -5.859 16.461 -7.254 11.718 -9.765q5.022 -7.812 11.16 -4.464 2.79 1.674 3.627 4.743t-1.674 6.696 -9.207 5.301q-11.16 3.348 -31.527 11.997t-25.389 10.881q-24.552 10.602 -39.06 12.834 -13.95 2.79 -44.082 -1.116 -5.58 -1.116 -5.022 1.116t9.486 10.602q13.95 12.834 37.386 12.276 9.486 -.558 20.088 -3.906t20.088 -7.812 18.693 -9.765 16.74 -9.486 13.671 -6.696 9.765 -1.395 4.743 6.138q0 1.116 -.558 2.511t-2.232 2.79 -3.348 2.511 -4.743 2.79 -5.022 2.511 -5.58 2.79 -5.301 2.511q-15.624 7.812 -37.665 24.552t-37.107 23.994 -27.342 .558q-11.718 -6.138 -35.154 -40.734 -12.276 -17.298 -13.95 -12.276 -.558 1.674 -.558 5.58 0 13.95 -8.37 31.527t-16.461 30.969 -11.718 32.364 6.417 35.154q-12.834 3.348 -34.875 50.22t-26.505 78.678q-1.116 10.044 -.837 38.502t-3.069 32.922q-4.464 13.392 -16.182 1.674 -17.856 -17.298 -20.088 -52.452 -1.116 -15.624 2.232 -31.248 2.232 -10.602 -.558 -10.044l-2.232 2.79q-20.088 36.27 5.58 92.628 2.79 6.696 13.95 15.624t13.392 11.16q11.16 12.834 58.032 50.499t51.894 42.687q8.928 8.37 9.765 21.204t-7.812 23.994 -25.389 12.834q4.464 8.37 16.182 24.831t15.624 30.132 3.906 39.339q25.668 -13.392 3.906 -51.336 -2.232 -4.464 -5.859 -8.928t-5.301 -6.696 -1.116 -3.348q1.674 -2.79 7.254 -5.301t11.16 1.395q25.668 29.016 92.628 20.088 74.214 -8.37 98.766 -48.546 12.834 -21.204 18.972 -16.74 6.696 3.348 5.58 29.016 -.558 13.95 -12.834 51.336 -5.022 12.834 -3.348 20.925t13.392 8.649q1.674 -10.602 8.091 -42.966t7.533 -50.22q1.116 -11.718 -3.627 -41.013t-4.185 -54.126 12.834 -39.339q8.37 -10.044 28.458 -10.044 .558 -20.646 19.251 -29.574t40.455 -5.859 33.48 12.555zm-350.424 -461.466q1.674 -9.486 -1.395 -16.74t-6.417 -8.37q-5.022 -1.116 -5.022 3.906 1.116 2.79 2.79 3.348 5.58 0 3.906 8.37 -1.674 11.16 4.464 11.16 1.674 0 1.674 -1.674zm233.802 109.926q-1.116 -4.464 -3.627 -6.417t-7.254 -2.79 -8.091 -3.069q-2.79 -1.674 -5.301 -4.464t-3.906 -4.464 -3.069 -3.627 -2.232 -2.232 -2.232 .837q-7.812 8.928 3.906 24.273t21.762 17.577q5.022 .558 8.091 -4.464t1.953 -11.16zm-99.324 -118.854q0 -6.138 -2.79 -10.881t-6.138 -6.975 -5.022 -1.674q-7.812 .558 -3.906 3.906l2.232 1.116q7.812 2.232 10.044 17.298 0 1.674 4.464 -1.116zm30.132 -130.014q0 -1.116 -1.395 -2.79t-5.022 -3.906 -5.301 -3.348q-8.37 -8.37 -13.392 -8.37 -5.022 .558 -6.417 4.185t-.558 7.254 -.279 6.975q-.558 2.232 -3.348 5.859t-3.348 5.022 1.674 4.743q2.232 1.674 4.464 0t6.138 -5.022 8.37 -5.022q.558 -.558 5.022 -.558t8.37 -1.116 5.022 -3.906zm315.27 748.278q11.16 6.696 17.298 13.671t6.696 13.392 -1.395 12.555 -8.649 12.276 -13.113 10.881 -16.74 10.323 -17.577 9.207 -17.856 8.649 -15.066 7.254q-21.204 10.602 -47.709 31.248t-42.129 35.712q-9.486 8.928 -37.944 10.881t-49.662 -8.091q-10.044 -5.022 -16.461 -13.113t-9.207 -14.229 -12.276 -10.881 -26.226 -5.301q-24.552 -.558 -72.54 -.558 -10.602 0 -31.806 .837t-32.364 1.395q-24.552 .558 -44.361 8.37t-29.853 16.74 -24.273 15.903 -29.853 6.417q-16.182 -.558 -61.938 -17.298t-81.468 -23.994q-10.602 -2.232 -28.458 -5.301t-27.9 -5.022 -22.041 -5.301 -18.693 -8.091 -9.486 -10.881q-5.58 -12.834 3.906 -37.107t10.044 -30.411q.558 -8.928 -2.232 -22.32t-5.58 -23.715 -2.511 -20.367 5.859 -15.066q7.812 -6.696 31.806 -7.812t33.48 -6.696q16.74 -10.044 23.436 -19.53t6.696 -28.458q11.718 40.734 -17.856 59.148 -17.856 11.16 -46.314 8.37 -18.972 -1.674 -23.994 5.58 -7.254 8.37 2.79 31.806 1.116 3.348 4.464 10.044t4.743 10.044 2.511 9.486 .558 12.276q0 8.37 -9.486 27.342t-7.812 26.784q1.674 9.486 20.646 14.508 11.16 3.348 47.151 10.323t55.521 11.439q13.392 3.348 41.292 12.276t46.035 12.834 30.969 2.232q23.994 -3.348 35.991 -15.624t12.834 -26.784 -4.185 -32.643 -10.602 -29.016 -11.16 -20.367q-67.518 -106.02 -94.302 -135.036 -37.944 -41.292 -63.054 -22.32 -6.138 5.022 -8.37 -8.37 -1.674 -8.928 -1.116 -21.204 .558 -16.182 5.58 -29.016t13.392 -26.226 12.276 -23.436q4.464 -11.718 14.787 -40.176t16.461 -43.524 16.74 -34.038 21.762 -30.132q61.38 -79.794 69.192 -108.81 -6.696 -62.496 -8.928 -172.98 -1.116 -50.22 13.392 -84.537t59.148 -58.311q21.762 -11.718 58.032 -11.718 29.574 -.558 59.148 7.533t49.662 23.157q31.806 23.436 51.057 67.797t16.461 82.305q-2.79 53.01 16.74 119.412 18.972 63.054 74.214 121.644 30.69 32.922 55.521 90.954t33.201 106.578q4.464 27.342 2.79 47.151t-6.696 30.969 -11.16 12.276q-5.58 1.116 -13.113 10.602t-15.066 19.809 -22.599 18.693 -34.038 7.812q-10.044 -.558 -17.577 -2.79t-12.555 -7.533 -7.533 -8.649 -6.417 -11.439 -5.022 -10.881q-12.276 -20.646 -22.878 -16.74t-15.624 27.342 3.906 54.126q11.16 39.06 .558 108.81 -5.58 36.27 10.044 56.079t40.734 18.414 47.43 -19.809q32.922 -27.342 49.941 -37.107t57.753 -23.715q29.574 -10.044 42.966 -20.367t10.323 -19.251 -13.95 -15.903 -28.737 -13.113q-18.414 -6.138 -27.621 -26.784t-8.37 -40.455 8.649 -26.505q.558 17.298 4.464 31.527t8.091 22.599 11.439 15.903 11.718 10.602 11.997 7.254 9.207 5.301z"></path>
+              </svg>
+            </span>
+              <span>Linux</span>
+          </a>
+        </div>
+          <div class="hint" <div>Thanks for download!</div>
+          <div class="repo" aria-label="Open Source link"></div>
+          <div class="repo" aria-label="Public Source link"></div>
+          <!-- Phong thư với logo GitHub -->
+          <div class="letter-image">
+            <div class="animated-mail">
+              <div class="back-fold"></div>
+              <div class="letter">
+                <div class="letter-border"></div>
+                <div class="public-source">
+                  <a href="https://github.com/kumalalalala/File-transfers-Byegg" target="_blank">View source</a>
+                </div>
+                <!-- Logo GitHub với hiệu ứng stroke -->
+                <div class="github-logo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 .297c-6.17 0-11.28 5.11-11.28 11.28 0 5.137 3.438 9.467 8.205 10.777.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.282c0-6.17-5.11-11.28-11.28-11.28z" />
+                  </svg>
+                </div>
+                <div class="letter-stamp"></div>
+              </div>
+              <div class="top-fold"></div>
+              <div class="body"></div>
+              <div class="left-fold"></div>
+            </div>
+            <div class="shadow"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mũi tên chỉ scroll xuống -->
+      <div class="scroll-indicator">
+        <div class="arrow-down"></div>
+      </div>
+    </section>
+    <!-- Section 2: About Me Page -->
+    <section class="section about-section">
+      <!-- Language Switcher -->
+      <div class="language-switcher">
+        <form class="tabber">
+          <input id="t1" name="language" type="radio" checked>
+          <label for="t1">Vie</label>
+          <input id="t2" name="language" type="radio">
+          <label for="t2">Eng</label>
+          <div class="blob"></div>
+        </form>
+      </div>
+      <div class="wrap animate pop">
+        <div class="overlay">
+          <div class="overlay-content animate slide-left delay-2">
+            <h1 class="animate slide-left pop delay-4">About me</h1>
+            <p class="animate slide-left pop delay-5" style="color: #c0c0c0; margin-bottom: 2.5rem;"> <em>Cam on ban:)</em></p>
+          </div>
+          <div class="image-content animate slide delay-5"></div>
+          <div class="dots animate">
+            <div class="dot animate slide-up delay-6"></div>
+            <div class="dot animate slide-up delay-7"></div>
+            <div class="dot animate slide-up delay-8"></div>
+          </div>
+        </div>
+        <div class="text">
+          <!-- Vietnamese Content -->
+          <div class="lang-content active" id="vie-content">
+            <p style="text-align: center;">HƯỚNG DẪN SỬ DỤNG NẰM Ở DƯỚI</p>
+            <p><img class="inset" src="https://i.ibb.co/SX8RmghN/1756548013759-APC-0004.jpg" alt="demo" />Xin chào, bạn có thể gọi tôi là Egg, tôi là một AI Builder nghiệp dư đã có một ít kinh nghiệm trước đây với dự án "CallByEgg", bạn có thể xem nó ở phần dự án của tôi trong Github. Tôi đã đóng băng dự án đó khá lâu, và giờ đây tôi trở lại với dự án "Transferbyegg".</p>
+            <p>-Truyền file tưởng đơn giản, nhưng thực tế nếu bạn có tiêu chuẩn hoặc nhu cầu cao hơn một chút thì lại khá rắc rối:<br>
+                + Bạn muốn gửi ảnh từ thiết bị này sang thiết bị khác nên bạn gửi ảnh qua các ứng dụng nhắn tin cho gọn → ảnh bị nén, vỡ nét<br>
+                + Bạn upload lên Google Drive, OneDrive, Mega, Dropbox → bản miễn phí phần lớn đều bị giới hạn dung lượng, download còn có thể bị chặn nếu vượt mức, và đối với bản thân tôi, việc dùng các nền tảng này chỉ để truyền một bức ảnh vài MB không phải là một giải pháp tối ưu về mặt thời gian<br>
+                + Bạn dùng app/web P2P → nếu trong mạng bạn có nhiều người cần nhận file thì có bao nhiêu người bạn phải upload lại bấy nhiêu lần (sẽ rất mất thời gian nếu là file nặng). Thậm chí là nếu như trong hai người, có một người mạng yếu thì tốc độ tải của cả hai sẽ đều chậm<br>
+                Tôi nghĩ bạn đã từng gặp rắc rối với những vấn đề đó, tôi cùng vậy. Nên tôi đã cho ra cái app này, nói đơn giản thì đây là một app bạn có thể truyền file trực tiếp với các thiết bị kết nối cùng một mạng (LAN). Và dung lượng có thể truyền sẽ là dung lượng ổ cứng của máy được chọn làm host cho bạn mọi người cùng dùng (hãy xem bước 3 của hướng dẫn sử dụng để hiểu rõ hơn).<br>
+                Và tôi chọn cách thực tế nhất để hiện thực hóa nó, đó là tận dụng AI. Tôi không phải coder, tôi không giỏi code, nhưng tôi đã dùng AI hiện thực hóa ý tưởng của mình. Toàn bộ trang web bạn đang xem và ứng dụng bạn đang tìm hiểu này được tạo ra hoàn toàn bằng Qwen, ChatGPT, DeepSeek, và Claude. Nghe thì hơi khác thường, nhưng đó chính là mục tiêu của tôi, tôi muốn hướng đến một giải pháp được xây dựng nhanh, miễn phí, thực dụng, không tốn quá nhiều công sức và phục vụ đúng nhu cầu truyền file trong mạng nội bộ của bản thân và hy vọng cũng sẽ là nhu cầu của mọi người.</p>
+            <p>Đây không phải là câu chuyện về ai giỏi hơn ai. Tôi không cố khẳng định app của mình như thế nào khi so với các ông lớn như Google Drive, OneDrive hay Dropbox có thế mạnh của họ đặc biệt khi bạn cần lưu trữ file lâu dài hoặc trả phí để dùng thêm tính năng,vv..., tôi sẽ tự nhận rằng mình không thể nào bằng được. Mà ở đây, tôi chỉ muốn đưa ra một lựa chọn mới, đơn giản, nhanh gọn, hữu ích, và quan trọng nhất là nó miễn phí cho tất cả mọi người. Hy vọng nó sẽ hữu ích và mang lại giá trị cho mọi người</p>
+            <img class="tree" src="https://i.ibb.co/F4GMhzqN/360-F-205951292-Grw3fa2-P4h7o-CDgr-XJJVkz-Ihz-HHRj60q-Photoroom.png" alt="demo" />
+            <p>HƯỚNG DẪN SỬ DỤNG:</p>
+            <P>
+                1.Hãy chọn đúng phiên bản hệ điều hành và tải về (có thể bị trình duyệt cảnh báo là không an toàn nhưng app này hoàn toàn PUBLIC SOURCE, nên bạn hoàn toàn có thể kiểm tra)<br>
+                2.Hãy nhấn chạy ứng dụng<br>
+                3.vào http://localhost:3000/ để nhập địa chỉ vị trí các file sẽ được lưu tạm khi mọi người truyền file trong web, chỉ khi xong bước này, mọi người mới có thể truy cập thông qua mã QR. Máy bạn sẽ trở thành host, vì vậy vị trí ổ cứng bạn chọn có bao nhiêu dung lượng trống thì đó là lượng dung lượng mà bạn và mọi người có thể truyền (tất cả các file được tải lên trong trang web sẽ lưu vào ổ cứng của bạn)<br>
+                4.nếu bạn muốn mọi người hoặc thiết bị khác của bạn truy cập nhanh để truyền file thì hãy quét mã QR trong terminal (bảng điều khiển màu đen) hoặc nhập http://<your-ip>:3000 vào trình duyệt để truy cập (có hiển thị trong terminal) nếu không thể quét<br>
+                5.Hãy sử dụng nó để truyền các file bạn muốn *ở trên máy tính bạn có thể thả file trực tiếp vào để truyền*<br>
+                6.Sau khi dùng xong, ĐỪNG tắt web bằng các nhấn tắt Terminal (bảng điều khiển màu đen), mà truy cập giao diện web của http://localhost:3000/ hãy cuộn xuống dưới cuối trang và bạn sẽ thấy nút "Close Website and Delete All Data" Hãy nhấn nút đó để trang web được đóng và các file được lưu tạm ở vị trí bạn chọn sẽ được xóa sạch (nếu bạn tắt bằng cách đóng Terminal thì các file đó sẽ bị giữ nguyên, gây ra nặng ổ cứng không đáng có)<br>
+            </P>
+          </div>
+          <!-- English Content -->
+          <div class="lang-content" id="eng-content">
+            <p style="text-align: center;">THE INSTRUCTIONS ARE AT THE BOTTOM</p>
+            <p><img class="inset" src="https://i.ibb.co/SX8RmghN/1756548013759-APC-0004.jpg" alt="demo" />Hello, you can call me Egg. I'm an amateur AI Builder with some prior experience with the "CallByEgg" project, which you can view in my Github projects section. I froze that project quite a while ago, and now I'm back with the "Transferbyegg" project.</p>
+            <p>- File transfer seems simple, but in reality, if you have higher standards or needs, it can be quite complicated:<br>
+                + You want to send photos from one device to another, so you send them through messaging apps for convenience → the images get compressed, lose quality<br>
+                + You upload to Google Drive, OneDrive, Mega, Dropbox → the free versions mostly have storage limits, downloads can be blocked if exceeded, and for me personally, using these platforms just to transfer a few MB image isn't a time-optimal solution<br>
+                + You use P2P apps/websites → if there are multiple people in your network who need to receive the file, you have to upload it as many times as there are recipients (which would be very time-consuming for large files). Even between two people, if one has a weak network connection, the transfer speed for both will be slow<br>
+                I think you've faced these problems before, you're not alone in these limitations, and neither am I. So I created this app, simply put it's an app that allows you to transfer files directly with devices connected to the same network (LAN). And the transferable capacity will be the hard drive space of the machine chosen as the host for everyone to use (see step 3 of the user guide for more details).<br>
+                And I chose the most practical way to implement it, which is leveraging AI. I'm not a coder, I'm not good at coding, but I used AI to bring my idea to life. The entire website you're viewing and the application you're learning about were created entirely using Qwen, ChatGPT, DeepSeek, and Claude. It might sound unusual, but that's exactly my goal - I want to pursue a solution that's built quickly, free, practical, doesn't require too much effort, and serves the file transfer needs within my internal network, hoping it will also meet everyone else's needs.</p>
+            <p>This isn't a story about who's better than whom. I'm not trying to claim how my app compares to big players like Google Drive, OneDrive, or Dropbox - they have their strengths, especially when you need long-term file storage or paid features, etc. I'll admit that I can't compete with them. Here, I just want to offer a new choice: simple, quick, useful, and most importantly, free for everyone. I hope it will be useful and bring value to everyone.</p>
+            <img class="tree" src="https://i.ibb.co/F4GMhzqN/360-F-205951292-Grw3fa2-P4h7o-CDgr-XJJVkz-Ihz-HHRj60q-Photoroom.png" alt="demo" />
+            <p>USER GUIDE:</p>
+            <p>
+                1. Please select the correct operating system version and download (your browser might warn that it's unsafe, but this app is completely PUBLIC SOURCE, so you can verify it)<br>
+                2. Run the application<br>
+                3. Go to http://localhost:3000/ to specify the location where temporary files will be stored when people transfer files through the web. Only after completing this step can others access it via QR code. Your machine will become the host, so the available space on the hard drive you select will determine the total capacity that you and others can use for transfers (all files uploaded through the website will be stored on your hard drive)<br>
+                4. If you want others or your other devices to quickly access for file transfer, scan the QR code in the terminal (the black control panel) or enter http://<yourIP>:3000 (in termial) in your browser if you can't scan<br>
+                5. Use it to transfer the files you want *on your computer, you can drag and drop files directly to transfer*<br>
+                6. After use, DO NOT close the web by closing the Terminal (the black control panel). Instead, access the web interface at http://localhost:3000/, scroll to the bottom of the page, and you'll see a "Close Website and Delete All Data" button. Click that button to properly close the website and delete all temporarily stored files in your selected location (if you close by terminating the Terminal, those files will remain, causing unnecessary hard drive usage)<br>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
-
   <script>
-    // Tự động thử lấy favicon từ GitHub (raw) — thử main, sau đó master.
-    // Nếu tìm thấy (response.ok), đổi link rel="icon" sang URL đó.
+    // ========== Particle Animation System ==========
+    class ParticleSystem {
+      constructor() {
+        this.canvas = document.getElementById('particle-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.particleCount = 0;
+        this.mouse = { x: 0, y: 0 };
+        this.init();
+        window.addEventListener('resize', () => this.init());
+        window.addEventListener('mousemove', (e) => {
+          this.mouse.x = e.clientX;
+          this.mouse.y = e.clientY;
+        });
+      }
+      init() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.particles = [];
+        for (let i = 0; i < this.particleCount; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2,
+            size: Math.random() * 3 + 1,
+            opacity: Math.random() * 1
+          });
+        }
+        this.animate();
+      }
+      animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.particles.forEach((particle, i) => {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          if (particle.x < 0 || particle.x > this.canvas.width) particle.vx *= -1;
+          if (particle.y < 0 || particle.y > this.canvas.height) particle.vy *= -1;
+          // Mouse interaction
+          const dx = this.mouse.x - particle.x;
+          const dy = this.mouse.y - particle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            const force = (100 - distance) / 100;
+            particle.vx -= (dx / distance) * force * 0;
+            particle.vy -= (dy / distance) * force * 0;
+          }
+          // Draw particle
+          this.ctx.beginPath();
+          this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          this.ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+          this.ctx.fill();
+          // Connect nearby particles
+          for (let j = i + 1; j < this.particles.length; j++) {
+            const other = this.particles[j];
+            const dx = particle.x - other.x;
+            const dy = particle.y - other.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 120) {
+              this.ctx.beginPath();
+              this.ctx.moveTo(particle.x, particle.y);
+              this.ctx.lineTo(other.x, other.y);
+              this.ctx.lineWidth = 2;
+              this.ctx.strokeStyle = `rgba(255, 255, 255, ${1 * (1 - distance / 150)})`;
+              this.ctx.stroke();
+            }
+          }
+        });
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+    // ========== Hiệu ứng load ==========
+    function initRevealAnimations() {
+      const card = document.querySelector('.card');
+      const title = document.querySelector('h1');
+      const subtitle = document.querySelector('.subtitle');
+      const btnRow = document.querySelector('.btn-row');
+      const hint = document.querySelector('.hint');
+      const repo = document.querySelector('.repo');
+      const buttons = document.querySelectorAll('.download-btn');
+      // Hiển thị tất cả cùng lúc với độ trễ nhỏ
+      card.classList.add('visible');
+      setTimeout(() => title.classList.add('visible'), 50);
+      setTimeout(() => subtitle.classList.add('visible'), 100);
+      setTimeout(() => btnRow.classList.add('visible'), 150);
+      buttons.forEach((btn, index) => {
+        setTimeout(() => btn.classList.add('visible'), 200 + (index * 50));
+      });
+      setTimeout(() => hint.classList.add('visible'), 300);
+      setTimeout(() => repo.classList.add('visible'), 350);
+    }
+    // ========== Hiệu ứng xoay card theo chuột ==========
+    function initCardTilt() {
+      const card = document.querySelector('.card');
+      document.addEventListener('mousemove', (e) => {
+        const xAxis = (window.innerWidth / 2 - e.pageX) / 95;
+        const yAxis = (window.innerHeight / 2 - e.pageY) / 95;
+        card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+      });
+      // Reset card position when mouse leaves
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+      });
+      // Reset card position when mouse leaves the entire document
+      document.addEventListener('mouseleave', (e) => {
+        if (e.clientY <= 0 || e.clientX <= 0 || 
+            e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+          card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        }
+      });
+    }
+    // ========== Loading indicator ==========
+    function initLoadingIndicator() {
+      const loadingBar = document.querySelector('.loading');
+      // Tăng tốc độ loading
+      let progress = 0;
+      const interval = setInterval(() => {
+        if (progress >= 100) {
+          clearInterval(interval);
+          loadingBar.style.transform = 'scaleX(1)';
+          setTimeout(() => {
+            loadingBar.style.opacity = '0';
+            setTimeout(() => {
+              loadingBar.style.display = 'none';
+            }, 200);
+          }, 300);
+        } else {
+          progress += Math.random() * 15 + 5;
+          if (progress > 100) progress = 100;
+          loadingBar.style.transform = `scaleX(${progress / 100})`;
+        }
+      }, 80);
+    }
+    // ========== Parallax effect for geometric shapes ==========
+    function initParallax() {
+      const shapes = document.querySelectorAll('.geometric-shape');
+      document.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.clientX) / 1;
+        const y = (window.innerHeight / 2 - e.clientY) / 1;
+        shapes.forEach(shape => {
+          const speed = parseFloat(shape.style.width) / 300;
+          shape.style.transform = `translate(${x * speed}px, ${y * speed}px) rotate(${shape._rotation || 0}deg)`;
+        });
+      });
+    }
+    // ========== Favicon loader ==========
     (function(){
       try {
         const user = 'kumalalalala';
@@ -317,11 +1349,8 @@
         const candidateUrls = [
           `https://raw.githubusercontent.com/${user}/${repo}/main/favicon.ico`,
           `https://raw.githubusercontent.com/${user}/${repo}/master/favicon.ico`,
-          // một cái backup path nếu raw không dùng (thường không cần)
           `https://github.com/${user}/${repo}/raw/main/favicon.ico`
         ];
-
-        // ensure there is a link[rel="icon"] in head to update
         let iconLink = document.querySelector('link[rel="icon"]');
         if(!iconLink){
           iconLink = document.createElement('link');
@@ -330,28 +1359,86 @@
           iconLink.href = 'favicon.ico';
           document.head.appendChild(iconLink);
         }
-
-        // sequentially try HEAD to check existence
-        (async function trySet(){
-          for(const url of candidateUrls){
-            try{
-              const res = await fetch(url, { method: 'HEAD' });
-              if(res && res.ok){
-                iconLink.href = url;
-                // stop at first success
-                return;
-              }
-            } catch(e){
-              // silent fail, thử url tiếp
+        // Không chặn việc tải trang chính
+        setTimeout(() => {
+          (async function trySet(){
+            for(const url of candidateUrls){
+              try{
+                const res = await fetch(url, { method: 'HEAD' });
+                if(res && res.ok){
+                  iconLink.href = url;
+                  return;
+                }
+              } catch(e){}
             }
-          }
-          // nếu không tìm được, giữ nguyên favicon local (favicon.ico)
-        })();
+          })();
+        }, 1000);
       } catch(e){
-        // an toàn, không ảnh hưởng UI nếu có lỗi
         console.error('favicon auto-load error:', e);
       }
     })();
+    // ========== Hiệu ứng stroke cho logo GitHub ==========
+    function initGitHubLogoAnimation() {
+      const letterImage = document.querySelector('.letter-image');
+      const githubLogoPath = document.querySelector('.github-logo path');
+      // Khởi tạo hiệu ứng stroke lần đầu
+      setTimeout(function() {
+        githubLogoPath.style.animation = 'dash 2s ease-out forwards';
+      }, 700);
+      // Lắng nghe sự kiện hover để kích hoạt lại hiệu ứng stroke
+      letterImage.addEventListener('mouseenter', function() {
+        // Reset animation
+        githubLogoPath.style.animation = 'none';
+        // Kích hoạt lại animation sau một khoảng thời gian ngắn
+        setTimeout(function() {
+          githubLogoPath.style.animation = 'dash 2s ease-out forwards';
+        }, 10);
+      });
+    }
+    // ========== Language Switcher ==========
+    function initLanguageSwitcher() {
+      const vieRadio = document.getElementById('t1');
+      const engRadio = document.getElementById('t2');
+      const vieContent = document.getElementById('vie-content');
+      const engContent = document.getElementById('eng-content');
+      // Set initial language
+      updateLanguage();
+      // Add event listeners
+      vieRadio.addEventListener('change', updateLanguage);
+      engRadio.addEventListener('change', updateLanguage);
+      function updateLanguage() {
+        if (vieRadio.checked) {
+          vieContent.classList.add('active');
+          engContent.classList.remove('active');
+          document.querySelector('.about-section h1').textContent = 'Về tôi và dự án này';
+          document.querySelector('.about-section .overlay-content p em').textContent = 'Cảm ơn bạn :)';
+        } else {
+          vieContent.classList.remove('active');
+          engContent.classList.add('active');
+          document.querySelector('.about-section h1').textContent = 'About me and this project';
+          document.querySelector('.about-section .overlay-content p em').textContent = 'Thank you :)';
+        }
+      }
+    }
+    // ========== Initialize everything when DOM is loaded ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      // Khởi tạo loading trước
+      initLoadingIndicator();
+      // Khởi tạo các hiệu ứng với độ trễ nhỏ
+      setTimeout(() => {
+        const particleSystem = new ParticleSystem();
+        initCardTilt();
+        initParallax();
+        initGitHubLogoAnimation();
+        initLanguageSwitcher();
+        // Add rotation values to shapes for the animation
+        document.querySelectorAll('.geometric-shape').forEach(shape => {
+          shape._rotation = Math.random() * 360;
+        });
+        // Hiển thị nội dung nhanh hơn
+        initRevealAnimations();
+      }, 100);
+    });
   </script>
 </body>
 </html>
